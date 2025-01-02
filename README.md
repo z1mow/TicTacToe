@@ -17,6 +17,7 @@ This application is a modern iOS version of the popular Tic Tac Toe game. The ap
 - Winner detection
 - Game result display
 - New game restart feature
+- Language support (English/Turkish)
 
 ## Technologies
 
@@ -60,6 +61,7 @@ Bu uygulama, popüler Tic Tac Toe oyununun modern bir iOS versiyonudur. Uygulama
 - Kazanan kontrolü
 - Oyun sonucu gösterimi
 - Yeni oyun başlatma özelliği
+- Dil desteği (İngilizce/Türkçe)
 
 ## Teknolojiler
 
