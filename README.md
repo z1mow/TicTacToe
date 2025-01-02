@@ -1,5 +1,10 @@
 # TicTacToe iOS Application | TicTacToe iOS Uygulaması
 
+<div align="center">
+  <img src="screenshots/screenshot1.png" alt="Game Screen | Oyun Ekranı" width="300">
+  <img src="screenshots/screenshot2.png" alt="Game Result Screen | Oyun Sonucu Ekranı" width="300">
+</div>
+
 [English 🇬🇧](#english) | [Türkçe 🇹🇷](#türkçe)
 
 # English 🇬🇧
