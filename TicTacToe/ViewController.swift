@@ -14,7 +14,14 @@ class ViewController: UIViewController {
         case Cross
     }
     
+    enum Language {
+        case Turkish
+        case English
+    }
+    
     @IBOutlet weak var turnLabel: UILabel!
+    @IBOutlet weak var symbolLabel: UILabel!
+    @IBOutlet weak var languageButton: UIButton!
     @IBOutlet weak var a1: UIButton!
     @IBOutlet weak var a2: UIButton!
     @IBOutlet weak var a3: UIButton!
@@ -35,9 +42,54 @@ class ViewController: UIViewController {
     var noughtsScore = 0
     var crossesScore = 0
     
+    var currentLanguage = Language.English
+    
+    // Localized strings
+    var localizedStrings: [String: [Language: String]] = [
+        "noughts": [.English: "Noughts", .Turkish: "Sıfırlar"],
+        "crosses": [.English: "Crosses", .Turkish: "Çarpılar"],
+        "noughtsWin": [.English: "Noughts Win!", .Turkish: "Sıfırlar Kazandı!"],
+        "crossesWin": [.English: "Crosses Win!", .Turkish: "Çarpılar Kazandı!"],
+        "draw": [.English: "Draw", .Turkish: "Berabere"],
+        "reset": [.English: "Reset", .Turkish: "Yeniden Başlat"],
+        "changeLang": [.English: "🇬🇧", .Turkish: "🇹🇷"],
+        "turnTitle": [.English: "Turn", .Turkish: "Sıra"]
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initBoard()
+        setupLanguageButton()
+        updateTurnLabel()
+        updateSymbolLabel()
+    }
+    
+    func setupLanguageButton() {
+        languageButton.setTitle(localizedStrings["changeLang"]?[currentLanguage], for: .normal)
+    }
+    
+    @IBAction func changeLanguage(_ sender: UIButton) {
+        currentLanguage = currentLanguage == .English ? .Turkish : .English
+        updateUILanguage()
+    }
+    
+    func updateUILanguage() {
+        languageButton.setTitle(localizedStrings["changeLang"]?[currentLanguage], for: .normal)
+        updateTurnLabel()
+        updateSymbolLabel()
+        
+        // Update any visible alert if present
+        if presentedViewController is UIAlertController {
+            dismiss(animated: true) {
+                if self.fullBoard() {
+                    self.resultAlert(title: self.localizedStrings["draw"]?[self.currentLanguage] ?? "Draw")
+                } else if self.checkForVictory(self.CROSS) {
+                    self.resultAlert(title: self.localizedStrings["crossesWin"]?[self.currentLanguage] ?? "Crosses Win!")
+                } else if self.checkForVictory(self.NOUGHT) {
+                    self.resultAlert(title: self.localizedStrings["noughtsWin"]?[self.currentLanguage] ?? "Noughts Win!")
+                }
+            }
+        }
     }
     
     func initBoard() {
@@ -57,16 +109,16 @@ class ViewController: UIViewController {
         
         if checkForVictory(CROSS) {
             crossesScore += 1
-            resultAlert(title: "Crosses Win!")
+            resultAlert(title: localizedStrings["crossesWin"]?[currentLanguage] ?? "Crosses Win!")
         }
         
         if checkForVictory(NOUGHT) {
             noughtsScore += 1
-            resultAlert(title: "Noughts Win!")
+            resultAlert(title: localizedStrings["noughtsWin"]?[currentLanguage] ?? "Noughts Win!")
         }
         
         if fullBoard() {
-            resultAlert(title: "Draw")
+            resultAlert(title: localizedStrings["draw"]?[currentLanguage] ?? "Draw")
         }
     }
     
@@ -115,9 +167,11 @@ class ViewController: UIViewController {
     }
     
     func resultAlert(title: String) {
-        let message = "\nNoughts: " + String(noughtsScore) + "\n\nCrosses: " + String(crossesScore)
+        let noughtsText = localizedStrings["noughts"]?[currentLanguage] ?? "Noughts"
+        let crossesText = localizedStrings["crosses"]?[currentLanguage] ?? "Crosses"
+        let message = "\n\(noughtsText): \(noughtsScore)\n\n\(crossesText): \(crossesScore)"
         let ac = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-        ac.addAction(UIAlertAction(title: "Reset", style: .default, handler: { _ in
+        ac.addAction(UIAlertAction(title: localizedStrings["reset"]?[currentLanguage] ?? "Reset", style: .default, handler: { _ in
             self.resetBoard()
         }))
         self.present(ac, animated: true)
@@ -130,14 +184,16 @@ class ViewController: UIViewController {
         }
         if firstTurn == Turn.Naught {
             firstTurn = Turn.Cross
-            turnLabel.text = CROSS
+            currentTurn = Turn.Cross
+            updateTurnLabel()
+            updateSymbolLabel()
         }
         else if firstTurn == Turn.Cross {
             firstTurn = Turn.Naught
-            turnLabel.text = NOUGHT
+            currentTurn = Turn.Naught
+            updateTurnLabel()
+            updateSymbolLabel()
         }
-        currentTurn = firstTurn
-        
     }
     
     func fullBoard() -> Bool {
@@ -155,17 +211,27 @@ class ViewController: UIViewController {
             if currentTurn == Turn.Naught {
                 sender.setTitle(NOUGHT, for: .normal)
                 currentTurn = Turn.Cross
-                turnLabel.text = CROSS
+                updateTurnLabel()
+                updateSymbolLabel()
             }
             else if currentTurn == Turn.Cross {
                 sender.setTitle(CROSS, for: .normal)
                 currentTurn = Turn.Naught
-                turnLabel.text = NOUGHT
+                updateTurnLabel()
+                updateSymbolLabel()
             }
             sender.isEnabled = false
         }
     }
     
+    func updateTurnLabel() {
+        let turnTitle = localizedStrings["turnTitle"]?[currentLanguage] ?? "Turn"
+        turnLabel.text = turnTitle
+    }
+    
+    func updateSymbolLabel() {
+        symbolLabel.text = currentTurn == .Cross ? CROSS : NOUGHT
+    }
     
 }
 
